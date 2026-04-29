@@ -918,8 +918,16 @@ dependencies = [
     { name = "crewai", extra = ["litellm", "tools"] },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "crewai" },
+]
+
 [package.metadata]
 requires-dist = [{ name = "crewai", extras = ["litellm", "tools"], specifier = "==1.14.3" }]
+
+[package.metadata.requires-dev]
+dev = [{ name = "crewai", specifier = ">=1.14.3" }]
 
 [[package]]
 name = "h11"
