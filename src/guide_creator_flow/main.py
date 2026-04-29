@@ -7,11 +7,14 @@ from pydantic import BaseModel, Field
 from crewai import LLM
 from crewai.flow.flow import Flow, listen, start
 from guide_creator_flow.crews.content_crew.content_crew import ContentCrew
+from guide_creator_flow.crews.research_crew.research_crew import ResearchCrew
 
 # Define our models for structured data
 class Section(BaseModel):
     title: str = Field(description="Title of the section")
     description: str = Field(description="Brief description of what the section should cover")
+
+
 
 class GuideOutline(BaseModel):
     title: str = Field(description="Title of the guide")
@@ -26,6 +29,83 @@ class GuideCreatorState(BaseModel):
     audience_level: str = ""
     guide_outline: GuideOutline = None
     sections_content: Dict[str, str] = {}
+
+class GuideResearchState(BaseModel):
+    topic: str = ""
+    audience_level: str = ""
+    research_findings: Dict[str, str] = {}
+
+
+class GuideResearchFlow(Flow[GuideResearchState]):
+    """Flow for researching a topic to gather information and insights for the guide"""
+
+    @start()
+    def get_research_input(self):
+        """Get input from the user about the research topic and audience"""
+        print("\n=== Research Your Guide Topic ===\n")
+
+        # Get user input
+        self.state.topic = input("What topic would you like to research for your guide? ")
+
+        # Get audience level with validation
+        while True:
+            audience = input("Who is your target audience? (beginner/intermediate/advanced) ").lower()
+            if audience in ["beginner", "intermediate", "advanced"]:
+                self.state.audience_level = audience
+                break
+            print("Please enter 'beginner', 'intermediate', or 'advanced'")
+
+        print(f"\nResearching {self.state.topic} for {self.state.audience_level} audience...\n")
+        return self.state
+    
+    @listen(get_research_input)
+    def perform_research(self, state):
+        """Perform research using the research crew to gather information and insights"""
+        print("🔍 Gathering comprehensive research...")
+        print("-" * 50)
+
+        try:
+            # Run the research crew
+            result = ResearchCrew().kickoff(inputs={
+                "topic": state.topic,
+                "audience_level": state.audience_level
+            })
+            
+            # Store research findings in state
+            # The result contains both raw research and synthesized findings
+            self.state.research_findings = {
+                "raw": result.raw if hasattr(result, 'raw') else str(result),
+                "synthesized": result.synthesized_findings if hasattr(result, 'synthesized_findings') else ""
+            }
+            
+            print(f"\n  Research completed for {state.topic}")
+            print(f"   Research saved to state for guide creation")
+            
+            # Optional: Save research to file for reference
+            os.makedirs("output/research", exist_ok=True)
+            with open(f"output/research/research_{state.topic.replace(' ', '_')}.md", "w") as f:
+                f.write(f"# Research: {state.topic}\n\n")
+                f.write(f"**Audience Level:** {state.audience_level}\n\n")
+                f.write("## Raw Research\n\n")
+                f.write(self.state.research_findings.get("raw", ""))
+                f.write("\n\n## Synthesized Findings\n\n")
+                f.write(self.state.research_findings.get("synthesized", ""))
+            
+            print(f"   Research saved to output/research/")
+            return self.state.research_findings
+            
+        except Exception as e:
+            print(f" Error performing research: {e}")
+            import traceback
+            traceback.print_exc()
+            self.state.research_findings = {
+                "error": str(e),
+                "raw": f"Research failed: {e}",
+                "synthesized": ""
+            }
+            return self.state.research_findings
+
+        
 
 class GuideCreatorFlow(Flow[GuideCreatorState]):
     """Flow for creating a comprehensive guide on any topic"""

@@ -1,0 +1,63 @@
+
+write_section_task:
+  description: >
+    Research and gather comprehensive information on the topic: "{section_title}"
+
+    Section description: {section_description}
+    Target audience: {audience_level} level learners
+
+    Your research should:
+    1. Identify key concepts, theories, and principles related to the topic
+    2. Gather relevant examples, case studies, and practical applications
+    3. Compile a list of credible sources and references
+    4. Organize your findings in a clear and structured manner
+
+    Provide a detailed outline of the section content based on your research.
+  expected_output: >
+    A well-organized outline that includes key points, examples, and references
+    that will be used to write the section content.
+  agent: researcher
+
+review_section_task:
+  description: >
+    Review the research findings and outline for the section on "{section_title}":  
+
+    {research_outline}
+
+    Target audience: {audience_level} level learners  
+    Your review should:
+    1. Verify the accuracy and relevance of the research findings
+    2. Ensure the outline is comprehensive and covers all necessary aspects of the topic
+    3. Check for logical flow and organization of the outline
+    4. Provide feedback on any missing key information or areas that need further research  
+    Provide an improved version of the research outline with your feedback incorporated.
+  expected_output: >
+    An improved research outline that is accurate, comprehensive, and well-organized,
+    ready to be used for writing the section content.
+  agent: research_reviewer
+  context:
+    - write_section_task
+
+validate_section_task:
+  description: >
+    Validate the research outline for the section on "{section_title}":
+
+    {research_outline}
+
+    Target audience: {audience_level} level learners
+
+    Your validation should:
+    1. Ensure that the research outline is accurate and based on credible sources
+    2. Confirm that the outline is comprehensive and covers all necessary aspects of the topic
+    3. Check for logical flow and organization of the outline
+    4. Provide feedback on any missing key information or areas that need further research
+
+    Provide a final validated version of the research outline with your feedback incorporated.
+  expected_output: >
+    A final validated research outline that is accurate, comprehensive, and well-organized,
+    ready to be used for writing the section content.
+  agent: research_validator
+  context:
+    - review_section_task
+
+    
