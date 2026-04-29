@@ -42,18 +42,23 @@ class GuideResearchFlow(Flow[GuideResearchState]):
     @start()
     def get_research_input(self):
         """Get input from the user about the research topic and audience"""
+        if self.state.topic and self.state.audience_level:
+            print(f"\nResearching {self.state.topic} for {self.state.audience_level} audience...\n")
+            return self.state
+
         print("\n=== Research Your Guide Topic ===\n")
 
-        # Get user input
-        self.state.topic = input("What topic would you like to research for your guide? ")
+        # Get user input if not provided by inputs
+        if not self.state.topic:
+            self.state.topic = input("What topic would you like to research for your guide? ")
 
-        # Get audience level with validation
-        while True:
-            audience = input("Who is your target audience? (beginner/intermediate/advanced) ").lower()
-            if audience in ["beginner", "intermediate", "advanced"]:
-                self.state.audience_level = audience
-                break
-            print("Please enter 'beginner', 'intermediate', or 'advanced'")
+        if not self.state.audience_level:
+            while True:
+                audience = input("Who is your target audience? (beginner/intermediate/advanced) ").lower()
+                if audience in ["beginner", "intermediate", "advanced"]:
+                    self.state.audience_level = audience
+                    break
+                print("Please enter 'beginner', 'intermediate', or 'advanced'")
 
         print(f"\nResearching {self.state.topic} for {self.state.audience_level} audience...\n")
         return self.state
@@ -185,18 +190,23 @@ class GuideCreatorFlow(Flow[GuideCreatorState]):
     @start()
     def get_user_input(self):
         """Get input from the user about the guide topic and audience"""
+        if self.state.topic and self.state.audience_level:
+            print(f"\nCreating a guide on {self.state.topic} for {self.state.audience_level} audience...\n")
+            return self.state
+
         print("\n=== Create Your Comprehensive Guide ===\n")
 
-        # Get user input
-        self.state.topic = input("What topic would you like to create a guide for? ")
+        # Get user input if not provided by inputs
+        if not self.state.topic:
+            self.state.topic = input("What topic would you like to create a guide for? ")
 
-        # Get audience level with validation
-        while True:
-            audience = input("Who is your target audience? (beginner/intermediate/advanced) ").lower()
-            if audience in ["beginner", "intermediate", "advanced"]:
-                self.state.audience_level = audience
-                break
-            print("Please enter 'beginner', 'intermediate', or 'advanced'")
+        if not self.state.audience_level:
+            while True:
+                audience = input("Who is your target audience? (beginner/intermediate/advanced) ").lower()
+                if audience in ["beginner", "intermediate", "advanced"]:
+                    self.state.audience_level = audience
+                    break
+                print("Please enter 'beginner', 'intermediate', or 'advanced'")
 
         print(f"\nCreating a guide on {self.state.topic} for {self.state.audience_level} audience...\n")
         return self.state
@@ -392,10 +402,13 @@ Generate 4-6 sections. Return ONLY the JSON object."""}
         
         return "Guide creation completed successfully"
 
-def kickoff():
-    """Run the guide creator flow"""
+def kickoff(inputs: dict | None = None):
+    """Run the guide creator flow."""
     try:
-        GuideCreatorFlow().kickoff()
+        if inputs:
+            GuideCreatorFlow().kickoff(inputs=inputs)
+        else:
+            GuideCreatorFlow().kickoff()
         print("\n=== Flow Complete ===")
         print("Your comprehensive guide is ready in the output directory.")
         print("Open output/complete_guide.md to view it.")
@@ -412,6 +425,16 @@ def plot():
     flow = GuideCreatorFlow()
     flow.plot("guide_creator_flow")
     print("Flow visualization saved to guide_creator_flow.html")
+
+
+def run(inputs: dict | None = None):
+    """Run the flow with optional input values."""
+    kickoff(inputs=inputs)
+
+
+def run_with_trigger(inputs: dict | None = None):
+    """Alias for deployment-triggered flow entrypoint."""
+    kickoff(inputs=inputs)
 
 if __name__ == "__main__":
     kickoff()
