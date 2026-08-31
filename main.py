@@ -12,11 +12,6 @@ llm =LLM(
     api_key = os.getenv("GOOGLE_GEMINI_API_KEY")
 )
 
-# res = llm.call("Write a short poem about the beauty of nature.")
-
-# print(res)
-
-
 class ReplaceJargonsTool(BaseTool):
     name: str = "Jargon replacement tool"
     description : str = "Replaces jargon with more specific terms. "
