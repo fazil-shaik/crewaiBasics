@@ -1,3 +1,17 @@
+.env
+__pycache__/
+lib/
+.DS_Store
+.venv/
+output/
+.env
+*.log
+*.pyc
+*.pyo
+.env.local
+.env.development.local
+.env.test.local 
+.env.production.local
 # Python-generated files
 __pycache__/
 *.py[oc]
