@@ -1,2 +1,2 @@
-crewai[litellm,tools]==1.14.3
+crewai[google-genai,litellm,tools]==1.14.3
 google-generativeai>=0.8.6
