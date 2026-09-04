@@ -43,19 +43,37 @@ class BlogCrew():
     @task
     def blog_task(self) -> Task:
         return Task(
-            config=self.tasks_config['blog_task'], # type: ignore[index]
-            agent = self.writer()
+            config=self.tasks_config["blog_task"],
+            agent=self.writer()
         )
-
 
     @crew
-    def crew(self)->Crew:
+    def crew(self) -> Crew:
         return Crew(
-            agents=[self.researcher(),self.writer()],
-            tasks=[self.research_task(),self.blog_task()],
+            agents=[
+                self.researcher(),
+                self.writer()
+            ],
+            tasks=[
+                self.research_task(),
+                self.blog_task()
+            ],
+            memory=True,
+            embedder={
+                "provider": "google-generativeai",
+                "config": {
+                    "model": "gemini-embedding-001",
+                    "api_key": os.environ["GOOGLE_API_KEY"]
+                }
+            }
         )
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
     blog_crew = BlogCrew()
-    blog_crew.crew().kickoff(inputs={"topic":"The future of electrical vehicles"})
+
+    blog_crew.crew().kickoff(
+        inputs={
+            "topic": "The future of electrical vehicles"
+        }
+    )

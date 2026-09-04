@@ -1,3 +1,4 @@
+README.md
 pyproject.toml
 src/guide_creator_flow/__init__.py
 src/guide_creator_flow/main.py
@@ -9,6 +10,7 @@ src/guide_creator_flow.egg-info/requires.txt
 src/guide_creator_flow.egg-info/top_level.txt
 src/guide_creator_flow/crews/test_research.py
 src/guide_creator_flow/crews/content_crew/content_crew.py
+src/guide_creator_flow/crews/marketing_crew/marketing_crew.py
 src/guide_creator_flow/crews/research_crew/__init__.py
 src/guide_creator_flow/crews/research_crew/research_crew.py
 src/guide_creator_flow/tools/__init__.py
